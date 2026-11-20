@@ -62,6 +62,7 @@
         <span class="sync-indicator"><span class="sync-dot" id="syncDot"></span><span id="syncText">已同步</span></span>
         <span class="avatar" id="accountAvatar" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:#FCE9DC">🌸</span>
         <span class="account-name" id="accountName">小暖</span>
+        <button class="logout-btn" id="changePwBtn">改密码</button>
         <button class="logout-btn" id="logoutBtn">退出</button>
       </div>
     </div>
@@ -173,6 +174,38 @@
       </div>
     </div>
     <div class="modal-body detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- 修改密码弹窗 -->
+<div class="modal-overlay" id="pwModal" aria-hidden="true">
+  <div class="modal settings-modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div>
+        <h3>修改密码 🔑</h3>
+        <p class="modal-sub">改完记得告诉对方新密码，不然 TA 登不进来</p>
+      </div>
+      <button class="close-btn" data-close="pwModal" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="field">
+        <span class="field-label">当前密码</span>
+        <input type="password" id="pwCurrent" placeholder="输入现在的密码" autocomplete="current-password" />
+      </label>
+      <label class="field">
+        <span class="field-label">新密码</span>
+        <input type="password" id="pwNew" placeholder="至少 6 位" autocomplete="new-password" />
+      </label>
+      <label class="field">
+        <span class="field-label">确认新密码</span>
+        <input type="password" id="pwConfirm" placeholder="再输入一次新密码" autocomplete="new-password" />
+      </label>
+      <div class="login-error" id="pwError"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" data-close="pwModal">取消</button>
+      <button class="btn-primary" id="savePwBtn">确认修改</button>
+    </div>
   </div>
 </div>
 
