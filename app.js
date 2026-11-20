@@ -147,6 +147,26 @@
     $('loginScreen').classList.remove('hidden');
     $('loginPassword').value = '';
   }
+  async function doChangePassword() {
+    const err = $('pwError');
+    err.textContent = '';
+    const cur = $('pwCurrent').value, neu = $('pwNew').value, conf = $('pwConfirm').value;
+    if (!cur || !neu || !conf) { err.textContent = '请把三项都填好'; return; }
+    if (neu.length < 6) { err.textContent = '新密码至少 6 位'; return; }
+    if (neu !== conf) { err.textContent = '两次输入的新密码不一致'; return; }
+    const btn = $('savePwBtn'); btn.disabled = true; btn.textContent = '修改中...';
+    // 先用当前密码重新登录验证，再改密码（Supabase 安全要求）
+    const email = currentUser.email;
+    const { error: loginErr } = await supabaseClient.auth.signInWithPassword({ email, password: cur });
+    if (loginErr) { btn.disabled = false; btn.textContent = '确认修改'; err.textContent = '当前密码不对'; return; }
+    const { error } = await supabaseClient.auth.updateUser({ password: neu });
+    btn.disabled = false; btn.textContent = '确认修改';
+    if (error) { err.textContent = '修改失败：' + (error.message || '请重试'); return; }
+    closeModal('pwModal');
+    $('pwCurrent').value = ''; $('pwNew').value = ''; $('pwConfirm').value = '';
+    toast('密码已修改，请用新密码重新登录 🔑');
+    setTimeout(() => doLogout(), 800);
+  }
 
   function showMain() {
     $('loginScreen').classList.add('hidden');
@@ -417,6 +437,12 @@
       doLogin(b.dataset.email, b.dataset.pw);
     }));
     $('logoutBtn').addEventListener('click', doLogout);
+    $('changePwBtn').addEventListener('click', () => {
+      $('pwError').textContent = '';
+      $('pwCurrent').value = ''; $('pwNew').value = ''; $('pwConfirm').value = '';
+      openModal('pwModal');
+    });
+    $('savePwBtn').addEventListener('click', doChangePassword);
 
     $('filterTabs').addEventListener('click', (e) => {
       const tab = e.target.closest('[data-filter]');
