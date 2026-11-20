@@ -127,14 +127,24 @@
   }
 
   /* ---------------- 认证 ---------------- */
-  async function doLogin(email, password) {
+  async function doLogin(email, password, isQuick) {
     const err = $('loginError');
     err.textContent = '';
     if (!email || !password) { err.textContent = '请填写邮箱和密码'; return; }
     const btn = $('loginBtn'); btn.disabled = true; btn.textContent = '登录中...';
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email.trim(), password });
     btn.disabled = false; btn.textContent = '登 录';
-    if (error) { err.textContent = '登录失败：邮箱或密码不对'; return; }
+    if (error) {
+      if (isQuick) {
+        $('loginEmail').value = email;
+        $('loginPassword').value = '';
+        err.textContent = '一键登录失败——你可能改过密码，请在下方手动输入新密码';
+        $('loginPassword').focus();
+      } else {
+        err.textContent = '登录失败：邮箱或密码不对';
+      }
+      return;
+    }
     currentUser = data.user;
     showMain();
     toast('欢迎回来，' + getUser(currentUser.id).name + ' ' + getUser(currentUser.id).avatar);
@@ -434,7 +444,7 @@
     document.querySelectorAll('.quick-login').forEach((b) => b.addEventListener('click', () => {
       $('loginEmail').value = b.dataset.email;
       $('loginPassword').value = b.dataset.pw;
-      doLogin(b.dataset.email, b.dataset.pw);
+      doLogin(b.dataset.email, b.dataset.pw, true);
     }));
     $('logoutBtn').addEventListener('click', doLogout);
     $('changePwBtn').addEventListener('click', () => {
