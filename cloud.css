@@ -1,0 +1,75 @@
+/* ============================================================
+   云端版 · 登录页样式（追加）
+   ============================================================ */
+
+/* 登录页 */
+.login-screen{
+  position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(1000px 600px at 15% 10%, #FFE9D6 0%, transparent 55%),
+    radial-gradient(900px 600px at 85% 90%, #FBE0E7 0%, transparent 55%),
+    linear-gradient(160deg, #FFF8F2, #FFF3EC);
+}
+.login-screen.hidden{ display:none; }
+.login-card{
+  width:100%; max-width:420px; background:var(--card); border:1px solid var(--border);
+  border-radius:28px; padding:38px 34px; box-shadow:0 24px 70px rgba(176,132,104,.2);
+  animation:modalIn .4s cubic-bezier(.2,.9,.3,1.1);
+}
+.login-logo{
+  width:66px; height:66px; margin:0 auto 18px; display:grid; place-items:center;
+  font-size:34px; border-radius:22px; transform:rotate(-6deg);
+  background:linear-gradient(145deg,#FFE3CE,#F9C7A8); box-shadow:0 8px 20px rgba(224,148,96,.28);
+}
+.login-card h2{
+  margin:0; text-align:center; font-family:var(--font-title); font-size:26px;
+  color:#5A4034; letter-spacing:2px;
+}
+.login-card .login-sub{ text-align:center; margin:8px 0 26px; font-size:13px; color:var(--text-faint); }
+.login-card .field{ margin-bottom:16px; }
+.login-card .field input[type=email],.login-card .field input[type=password]{
+  width:100%; border:1px solid var(--border); background:#fff; border-radius:var(--radius-sm);
+  padding:12px 14px; font-family:var(--font-body); font-size:14px; color:var(--text);
+  outline:none; transition:all .22s ease;
+}
+.login-card .field input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.login-btn{
+  width:100%; border:none; cursor:pointer; margin-top:8px;
+  font-family:var(--font-body); font-size:14.5px; font-weight:600; color:#fff;
+  padding:13px; border-radius:999px; background:linear-gradient(135deg,#EBA47B,#DE8B5E);
+  box-shadow:0 8px 20px rgba(222,139,94,.32); transition:all .22s ease;
+}
+.login-btn:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(222,139,94,.42); }
+.login-btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+.login-error{ color:#C96B6B; font-size:12.5px; text-align:center; min-height:18px; margin-top:10px; }
+.login-accounts{
+  margin-top:22px; padding-top:20px; border-top:1px dashed var(--border);
+  display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+}
+.quick-login{
+  border:1px solid var(--border); background:#fff; cursor:pointer; border-radius:999px;
+  padding:8px 14px; font-family:var(--font-body); font-size:12.5px; color:var(--text-soft);
+  transition:all .2s ease;
+}
+.quick-login:hover{ border-color:var(--primary); transform:translateY(-1px); }
+.cloud-badge{
+  display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--green);
+  background:var(--green-soft); padding:4px 10px; border-radius:999px; margin-bottom:14px;
+}
+
+/* 顶栏信息与退出 */
+.top-account{ display:flex; align-items:center; gap:8px; }
+.account-name{ font-size:13px; font-weight:600; color:var(--text); }
+.logout-btn{
+  border:1px solid var(--border); background:rgba(255,255,255,.7); cursor:pointer;
+  border-radius:999px; padding:7px 12px; font-family:var(--font-body); font-size:12px;
+  color:var(--text-soft); transition:all .2s ease;
+}
+.logout-btn:hover{ background:#fff; color:var(--primary-deep); }
+
+.sync-indicator{
+  display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-faint);
+}
+.sync-dot{ width:7px; height:7px; border-radius:50%; background:var(--green); }
+.sync-dot.off{ background:#D9B4A0; }
