@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>我们的小日记 · 云端双人版</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="cloud.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- 登录页 -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">📖</div>
+    <h2>我们的小日记</h2>
+    <p class="login-sub">登录，继续写只属于我们的故事</p>
+    <span class="cloud-badge">☁️ 云端同步 · 手机电脑都能用</span>
+
+    <label class="field">
+      <span class="field-label">邮箱</span>
+      <input type="email" id="loginEmail" placeholder="输入邮箱" autocomplete="username" />
+    </label>
+    <label class="field">
+      <span class="field-label">密码</span>
+      <input type="password" id="loginPassword" placeholder="输入密码" autocomplete="current-password" />
+    </label>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn">登 录</button>
+
+    <div class="login-accounts">
+      <button class="quick-login" data-email="xiaonuan@diary.local" data-pw="Nuan@2026diary">🌸 我是小暖</button>
+      <button class="quick-login" data-email="xiaoyang@diary.local" data-pw="Yang@2026diary">🌞 我是小阳</button>
+    </div>
+  </div>
+</div>
+
+<!-- 背景装饰 -->
+<div class="bg-decor" aria-hidden="true">
+  <span class="blob blob-1"></span>
+  <span class="blob blob-2"></span>
+  <span class="blob blob-3"></span>
+  <span class="doodle doodle-1">☁️</span>
+  <span class="doodle doodle-2">🌿</span>
+  <span class="doodle doodle-3">💛</span>
+</div>
+
+<div class="app" id="appMain" style="display:none">
+
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">📖</div>
+      <div class="brand-text">
+        <h1>我们的小日记</h1>
+        <p>把平凡的日子，写成只属于我们的故事</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="top-account">
+        <span class="sync-indicator"><span class="sync-dot" id="syncDot"></span><span id="syncText">已同步</span></span>
+        <span class="avatar" id="accountAvatar" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:#FCE9DC">🌸</span>
+        <span class="account-name" id="accountName">小暖</span>
+        <button class="logout-btn" id="logoutBtn">退出</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="welcome">
+      <div class="welcome-left">
+        <div class="welcome-badge">💌 OUR LITTLE DIARY · ☁️ 云端版</div>
+        <h2 id="welcomeTitle">今天也要好好记录呀 ☀️</h2>
+        <p id="welcomeSub">一路走来，每一页都有你的痕迹。</p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="toolbar">
+      <div class="filter-tabs" id="filterTabs">
+        <button class="tab active" data-filter="all">💕 全部</button>
+        <button class="tab" data-filter="mine">🌷 我写的</button>
+        <button class="tab" data-filter="other">🍀 TA 写的</button>
+      </div>
+      <div class="toolbar-right">
+        <label class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜一搜我们的回忆..." autocomplete="off" />
+        </label>
+        <button class="btn-primary" id="writeBtn">✏️ 写一篇日记</button>
+      </div>
+    </section>
+
+    <section class="diary-list" id="diaryList"></section>
+
+    <footer class="footer">
+      <span>用一点一滴，攒成我们共同的回忆 🧸</span>
+    </footer>
+  </main>
+</div>
+
+<!-- 写日记弹窗 -->
+<div class="modal-overlay" id="editorModal" aria-hidden="true">
+  <div class="modal editor-modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="editorTitle">写一篇日记 ✍️</h3>
+        <p class="modal-sub" id="editorSub">此刻的心情，值得被好好记下</p>
+      </div>
+      <button class="close-btn" data-close="editorModal" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId" />
+      <label class="field">
+        <span class="field-label">标题</span>
+        <input type="text" id="diaryTitle" maxlength="40" placeholder="给今天起个温暖的小标题..." />
+      </label>
+
+      <div class="field-row">
+        <div class="field">
+          <span class="field-label">今天的心情</span>
+          <div class="choice-row" id="moodChoices"></div>
+        </div>
+        <div class="field">
+          <span class="field-label">天气</span>
+          <div class="choice-row" id="weatherChoices"></div>
+        </div>
+      </div>
+
+      <label class="field">
+        <span class="field-label">正文</span>
+        <textarea id="diaryContent" rows="9" placeholder="今天发生了什么值得记录的小事呢...&#10;&#10;写给我们看 👀"></textarea>
+        <span class="char-count" id="charCount">0 字</span>
+      </label>
+
+      <div class="field">
+        <span class="field-label">配图 <span class="field-hint">（可选，最多 6 张）</span></span>
+        <label class="upload-zone" id="uploadZone">
+          <input type="file" id="imageInput" accept="image/*" multiple style="display:none" />
+          <span class="upload-ico">📷</span>
+          <span class="upload-main">点击选择图片，或拖拽到这里</span>
+          <span class="upload-sub">图片会压缩后存到云端</span>
+        </label>
+        <div class="image-preview" id="imagePreview"></div>
+      </div>
+
+      <label class="private-toggle">
+        <input type="checkbox" id="diaryPrivate" />
+        <span class="toggle-track"><span class="toggle-dot"></span></span>
+        <span class="toggle-text">
+          <strong>仅自己可见</strong>
+          <small>开启后，TA 将看不到这篇日记（悄悄话模式 🔒）</small>
+        </span>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" data-close="editorModal">再想想</button>
+      <button class="btn-primary" id="saveDiaryBtn">💾 保存日记</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日记详情弹窗 -->
+<div class="modal-overlay" id="detailModal" aria-hidden="true">
+  <div class="modal detail-modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div><h3 id="detailTitle">日记详情</h3></div>
+      <div class="detail-head-actions">
+        <button class="text-btn" id="editDiaryBtn">✏️ 编辑</button>
+        <button class="text-btn danger" id="deleteDiaryBtn">🗑 删除</button>
+        <button class="close-btn" data-close="detailModal" aria-label="关闭">✕</button>
+      </div>
+    </div>
+    <div class="modal-body detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- 图片放大 -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="查看图片">
+  <button class="lightbox-close" id="lightboxClose" aria-label="关闭">✕</button>
+  <img id="lightboxImg" src="" alt="日记配图" />
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
