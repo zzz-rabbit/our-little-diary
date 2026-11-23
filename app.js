@@ -466,6 +466,17 @@
     $('writeBtn').addEventListener('click', () => openEditor(null));
     $('saveDiaryBtn').addEventListener('click', saveDiary);
     $('diaryContent').addEventListener('input', updateCharCount);
+    // 换行按钮：在光标处插入换行符（手机软键盘无回车键时可用）
+    $('newlineBtn').addEventListener('mousedown', (e) => e.preventDefault());
+    $('newlineBtn').addEventListener('click', () => {
+      const ta = $('diaryContent');
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      ta.value = ta.value.slice(0, start) + '\n' + ta.value.slice(end);
+      const pos = start + 1;
+      ta.selectionStart = ta.selectionEnd = pos;
+      ta.focus();
+      updateCharCount();
+    });
     $('moodChoices').addEventListener('click', (e) => {
       const b = e.target.closest('[data-mood]'); if (!b) return;
       selectedMood = b.dataset.mood; renderChoices();
