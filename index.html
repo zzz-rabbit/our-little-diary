@@ -130,8 +130,11 @@
       </div>
 
       <label class="field">
-        <span class="field-label">正文</span>
-        <textarea id="diaryContent" rows="9" placeholder="今天发生了什么值得记录的小事呢...&#10;&#10;写给我们看 👀"></textarea>
+        <span class="field-label label-with-action">
+          <span>正文</span>
+          <button type="button" class="newline-btn" id="newlineBtn">↵ 换行</button>
+        </span>
+        <textarea id="diaryContent" rows="9" enterkeyhint="enter" placeholder="今天发生了什么值得记录的小事呢...&#10;&#10;写给我们看 👀"></textarea>
         <span class="char-count" id="charCount">0 字</span>
       </label>
 
